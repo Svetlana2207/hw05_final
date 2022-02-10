@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% load thumbnail %}
+
+{% block title %} Последние обновления на сайте{% endblock title %}
+  
+{% block content %}
+  <main>
+    <div class="container py-5">
+      {% include 'posts/includes/switcher.html' %}
+    {% for post in page_obj %}
+  <ul>
+    <li>
+      Автор: {{ post.author.get_full_name }}
+    </li>
+  </li>
+  <li class="list-group-item">
+    <a href="{% url 'posts:profile' post.author %}">
+      все посты пользователя 
+    </a>
+    <li>
+      Дата публикации: {{ post.pub_date|date:"d E Y" }}
+    </li>
+  </ul>
+  {% thumbnail post.image "x339" crop="center" upscale=True as im %}
+  <img class="card-img my-2" src="{{ im.url }}">
+  {% endthumbnail %}
+  <p>{{ post.text }}</p>
+  {% if post.group %}
+    <a href="{% url 'posts:group_posts' post.group.slug %}">все записи группы</a>
+  {% endif %}
+  {% if not forloop.last %}<hr>{% endif %}
+{% endfor %}
+  </main>
+  {% include 'posts/includes/paginator.html' %}
+{% endblock content %}
