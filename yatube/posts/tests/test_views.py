@@ -306,7 +306,7 @@ class FollowUnfollowViewsTest(TestCase):
             reverse('posts:add_comment', kwargs={'post_id': post.pk}),
             data={'text': text},
             follow=True)
-        self.assertEqual(count_comments+1, post.comments.count())
+        self.assertEqual(count_comments + 1, post.comments.count())
 
     def test_authorized_user_can_follow(self):
         """Авторизованный пользователь подписывается на других."""
@@ -322,7 +322,7 @@ class FollowUnfollowViewsTest(TestCase):
 
     def test_authorized_user_can_unfollow(self):
         """Авторизованный пользователь отписывается."""
-        following_count = self.user.following.count()+1
+        following_count = self.user.following.count() + 1
         self.assertNotEqual(following_count, 0)
         self.authorized_client.get(
             reverse('posts:profile_unfollow',
@@ -337,10 +337,7 @@ class FollowUnfollowViewsTest(TestCase):
         author = FollowUnfollowViewsTest.author
         text1 = 'пост для фолловеров'
         text2 = 'пост левого автора'
-        Post.objects.create(
-             author=author,
-             text=text1,
-        )
+        Post.objects.create(author=author, text=text1,)
         response = self.authorized_client.get(reverse('posts:follow_index'))
         self.assertEqual(0, response.context['page_obj'].paginator.count)
         self.authorized_client.get(reverse('posts:profile_follow',
@@ -348,10 +345,7 @@ class FollowUnfollowViewsTest(TestCase):
         response = self.authorized_client.get(reverse('posts:follow_index'))
         self.assertEqual(1, response.context['page_obj'].paginator.count)
 
-        post2 = Post.objects.create(
-             author=author,
-             text=text2,
-        )
+        post2 = Post.objects.create(author=author, text=text2,)
         response = self.authorized_client.get(reverse('posts:follow_index'))
         self.assertEqual(2, response.context['page_obj'].paginator.count)
 
