@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -34,6 +35,10 @@ class PostsURLTests(TestCase):
         self.authorized_client.force_login(self.user)
         self.author = Client()
         self.author.force_login(self.user)
+
+    def tearDown(self):
+        super().tearDown()
+        cache.clear()
 
     def test_homepage(self):
         """Доступность страниц любому пользователю."""

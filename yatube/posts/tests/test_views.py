@@ -10,100 +10,100 @@ from django.test import Client, TestCase
 from django.urls import reverse
 
 from posts.models import Group, Post
-# from yatube.settings import PAGE_QUANTITY
+from yatube.settings import PAGE_QUANTITY
 
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
 User = get_user_model()
 
 
-# class PostPagesTest(TestCase):
-#     @classmethod
-#     def setUpClass(cls):
-#         super().setUpClass()
+class PostPagesTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
 
-#         cls.user = User.objects.create(username='testuser')
-#         cls.author = User.objects.create(username='testauthor')
-#         cls.group = Group.objects.create(
-#             title='тестовый титл',
-#             description='тестовое описание',
-#             slug='testslug',
-#         )
+        cls.user = User.objects.create(username='testuser')
+        cls.author = User.objects.create(username='testauthor')
+        cls.group = Group.objects.create(
+            title='тестовый титл',
+            description='тестовое описание',
+            slug='testslug',
+        )
 
-#         pages_num = range(0, 28)
-#         post_quantity = len(pages_num)
-#         if post_quantity > PAGE_QUANTITY * 2:
-#             cls.page2_quantity = PAGE_QUANTITY
-#         else:
-#             cls.page2_quantity = post_quantity - PAGE_QUANTITY
-#         for i in pages_num:
-#             cls.post = Post.objects.create(
-#                 author=cls.user,
-#                 text=f'Тестовая группа {i}',
-#                 group=cls.group
-#             )
+        pages_num = range(0, 28)
+        post_quantity = len(pages_num)
+        if post_quantity > PAGE_QUANTITY * 2:
+            cls.page2_quantity = PAGE_QUANTITY
+        else:
+            cls.page2_quantity = post_quantity - PAGE_QUANTITY
+        for i in pages_num:
+            cls.post = Post.objects.create(
+                author=cls.user,
+                text=f'Тестовая группа {i}',
+                group=cls.group
+            )
 
-#     def setUp(self):
-#         self.authorized_client = Client()
-#         self.authorized_client.force_login(self.user)
-#         self.author = Client()
-#         self.author.force_login(self.user)
+    def setUp(self):
+        self.authorized_client = Client()
+        self.authorized_client.force_login(self.user)
+        self.author = Client()
+        self.author.force_login(self.user)
 
-#     def tearDown(self):
-#         super().tearDown()
-#         cache.clear()
+    def tearDown(self):
+        super().tearDown()
+        cache.clear()
 
-#     def test_paginator(self):
-#         """Количество постов на главной странице."""
-#         response = self.client.get(reverse('posts:index'))
-#         self.assertEqual(len(response.context['page_obj']), PAGE_QUANTITY)
-#         response = self.client.get(reverse('posts:index') + '?page=2')
-#         self.assertEqual(len(response.context['page_obj']),
-#                          self.page2_quantity)
+    def test_paginator(self):
+        """Количество постов на главной странице."""
+        response = self.client.get(reverse('posts:index'))
+        self.assertEqual(len(response.context['page_obj']), PAGE_QUANTITY)
+        response = self.client.get(reverse('posts:index') + '?page=2')
+        self.assertEqual(len(response.context['page_obj']),
+                         self.page2_quantity)
 
-#     def test_paginator_group_list(self):
-#         """Количество постов на странице группы."""
-#         group = PostPagesTest.group
-#         response = self.client.get(reverse(
-#             'posts:group_posts', kwargs={'slug': f'{group.slug}'}))
-#         self.assertEqual(len(response.context['page_obj']), PAGE_QUANTITY)
-#         response = self.client.get(reverse(
-#             'posts:group_posts',
-#             kwargs={'slug': f'{group.slug}'}) + '?page=2')
-#         self.assertEqual(len(response.context['page_obj']),
-#                          self.page2_quantity)
+    def test_paginator_group_list(self):
+        """Количество постов на странице группы."""
+        group = PostPagesTest.group
+        response = self.client.get(reverse(
+            'posts:group_posts', kwargs={'slug': f'{group.slug}'}))
+        self.assertEqual(len(response.context['page_obj']), PAGE_QUANTITY)
+        response = self.client.get(reverse(
+            'posts:group_posts',
+            kwargs={'slug': f'{group.slug}'}) + '?page=2')
+        self.assertEqual(len(response.context['page_obj']),
+                         self.page2_quantity)
 
-#     def test_paginator_profile(self):
-#         """Количество постов на странице профиля."""
-#         post = PostPagesTest.post
-#         response = self.client.get(reverse(
-#             'posts:profile',
-#             kwargs={'username': f'{post.author}'}))
-#         self.assertEqual(len(response.context['page_obj']), PAGE_QUANTITY)
-#         response = self.client.get(reverse(
-#             'posts:profile',
-#             kwargs={'username': f'{post.author}'}) + '?page=2')
-#         self.assertEqual(len(response.context['page_obj']),
-#                          self.page2_quantity)
+    def test_paginator_profile(self):
+        """Количество постов на странице профиля."""
+        post = PostPagesTest.post
+        response = self.client.get(reverse(
+            'posts:profile',
+            kwargs={'username': f'{post.author}'}))
+        self.assertEqual(len(response.context['page_obj']), PAGE_QUANTITY)
+        response = self.client.get(reverse(
+            'posts:profile',
+            kwargs={'username': f'{post.author}'}) + '?page=2')
+        self.assertEqual(len(response.context['page_obj']),
+                         self.page2_quantity)
 
-#     def test_pages_uses_correct_template(self):
-#         """URL-адрес использует соответствующий шаблон."""
-#         templates_pages_names = {
-#             reverse('posts:index'): 'posts/index.html',
-#             reverse('posts:group_posts', kwargs={'slug': 'testslug'}):
-#                 'posts/group_list.html',
-#             reverse('posts:profile', kwargs={'username': 'testuser'}):
-#                 'posts/profile.html',
-#             reverse('posts:post_detail', kwargs={'post_id': 1}):
-#                 'posts/post_detail.html',
-#             reverse('posts:post_create'): 'posts/create.html',
-#             reverse('posts:post_edit', kwargs={'post_id': 1}):
-#                 'posts/create.html',
-#         }
-#         for reverse_name, template in templates_pages_names.items():
-#             with self.subTest(reverse_name=reverse_name):
-#                 response = self.authorized_client.get(reverse_name)
-#                 self.assertTemplateUsed(response, template)
+    def test_pages_uses_correct_template(self):
+        """URL-адрес использует соответствующий шаблон."""
+        templates_pages_names = {
+            reverse('posts:index'): 'posts/index.html',
+            reverse('posts:group_posts', kwargs={'slug': 'testslug'}):
+                'posts/group_list.html',
+            reverse('posts:profile', kwargs={'username': 'testuser'}):
+                'posts/profile.html',
+            reverse('posts:post_detail', kwargs={'post_id': 1}):
+                'posts/post_detail.html',
+            reverse('posts:post_create'): 'posts/create.html',
+            reverse('posts:post_edit', kwargs={'post_id': 1}):
+                'posts/create.html',
+        }
+        for reverse_name, template in templates_pages_names.items():
+            with self.subTest(reverse_name=reverse_name):
+                response = self.authorized_client.get(reverse_name)
+                self.assertTemplateUsed(response, template)
 
 
 class ContextPagesTest(TestCase):

@@ -10,7 +10,7 @@ from .utils import page_quan
 @cache_page(20)
 def index(request):
     template = 'posts/index.html'
-    posts = Post.objects.all()
+    posts = Post.objects.select_related('group', 'author').all()
     page_obj = page_quan(posts, request)
     context = {
         'page_obj': page_obj['page_object'],
@@ -40,9 +40,7 @@ def profile(request, username):
     following = False
 
     if request.user.is_authenticated:
-        if author.following.filter(user=request.user):
-            following = True
-
+        following = author.following.filter(user=request.user).exists()
     if author == request.user:
         sub = False
     context = {
@@ -60,7 +58,6 @@ def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     post_count = post.author.posts.count()
     form = CommentForm(request.POST)
-    # comments = Comment.objects.filter(post_id=post_id)
     comments = post.comments.all()
     context = {
         'post': post,
