@@ -212,6 +212,9 @@ class ContextPagesTest(TestCase):
         response = self.client.get(reverse('posts:index'))
         Post.objects.all()[0].delete()
         self.assertContains(response, post.text)
+        cache.clear()
+        response = self.client.get(reverse('posts:index'))
+        self.assertNotContains(response, post.text)
 
 
 class PostCreateViewsTest(TestCase):
@@ -231,7 +234,6 @@ class PostCreateViewsTest(TestCase):
         )
 
     def setUp(self):
-        self.user = PostCreateViewsTest.user
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
 
@@ -282,7 +284,6 @@ class FollowUnfollowViewsTest(TestCase):
         )
 
     def setUp(self):
-        self.user = FollowUnfollowViewsTest.user
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
         self.authorized_follower = Client()
