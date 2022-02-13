@@ -12,8 +12,10 @@ def index(request):
     template = 'posts/index.html'
     posts = Post.objects.select_related('group', 'author').all()
     page_obj = page_quan(posts, request)
+    index = True
     context = {
         'page_obj': page_obj['page_object'],
+        'index': index,
     }
     return render(request, template, context)
 
@@ -36,13 +38,11 @@ def profile(request, username):
     posts = author.posts.all()
     page_obj = page_quan(posts, request)
     post_count = posts.count()
-    sub = True
     following = False
 
     if request.user.is_authenticated:
         following = author.following.filter(user=request.user).exists()
-    if author == request.user:
-        sub = False
+    sub = (author != request.user)
     context = {
         'page_obj': page_obj['page_object'],
         'author': author,
@@ -123,8 +123,10 @@ def follow_index(request):
     template = 'posts/follow.html'
     posts = Post.objects.filter(author__following__user=request.user)
     page_obj = page_quan(posts, request)
+    follow = True
     context = {
         'page_obj': page_obj['page_object'],
+        'follow': follow,
     }
     return render(request, template, context)
 
