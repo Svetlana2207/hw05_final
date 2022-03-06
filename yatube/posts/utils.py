@@ -1,5 +1,4 @@
 from django.core.paginator import Paginator
-
 from yatube.settings import PAGE_QUANTITY
 
 
