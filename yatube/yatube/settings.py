@@ -161,6 +161,7 @@ LOGIN_REDIRECT_URL = 'posts:index'
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+# STATIC_ROOT  =  "/home/sssponomareva/yatube/static" 
 
 PAGE_QUANTITY = 10
 
